@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Японський аналізатор текстів</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; margin: 0; padding: 40px; color: #333; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; text-align: center; }
+        .form-group { margin-bottom: 20px; display: flex; gap: 10px; justify-content: center; }
+        input[type="text"] { padding: 10px; width: 300px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px; }
+        button { padding: 10px 20px; border: none; border-radius: 5px; background-color: #3498db; color: white; font-size: 16px; cursor: pointer; transition: 0.3s; }
+        nav { margin-bottom: 20px; background: white; padding: 15px; border-radius: 10px; max-width: 970px; margin-left: auto; margin-right: auto; }
+        nav a { margin-right: 15px; text-decoration: none; color: #3498db; font-weight: bold; }
+        button:hover { background-color: #2980b9; }
+        .btn-danger { background-color: #e74c3c; padding: 5px 10px; font-size: 14px; }
+        .btn-danger:hover { background-color: #c0392b; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #ecf0f1; }
+        .jp-text { font-size: 1.2em; font-weight: bold; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <nav>
+        <a href="/">Словник</a>
+        <a href="/articles">Тексти</a>
+        <a href="/explore">Новини</a>
+    </nav>
+    <h1>Мій словник 🇯🇵</h1>
+
+    <form class="form-group" th:action="@{/ui/vocabulary/add}" method="post">
+        <input type="text" name="word" placeholder="Введіть слово (напр. 先生)" required>
+        <button type="submit">Знайти та додати</button>
+    </form>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Ієрогліфи</th>
+            <th>Читання</th>
+            <th>Значення</th>
+            <th>Дія</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="vocab : ${words}">
+            <td class="jp-text" th:text="${vocab.word}">Слово</td>
+            <td th:text="${vocab.reading}">Читання</td>
+            <td th:text="${vocab.meaning}">Значення</td>
+            <td>
+                <form th:action="@{/ui/vocabulary/delete}" method="post" style="margin: 0;">
+                    <input type="hidden" name="id" th:value="${vocab.id}">
+                    <button type="submit" class="btn-danger">Видалити</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

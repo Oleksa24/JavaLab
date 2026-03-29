@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${article.title}">Текст</title>
+    <style>
+        body { font-family: sans-serif; background-color: #f4f7f6; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; }
+        .jp-text { font-size: 1.5em; line-height: 2.0; background: #eef2f3; padding: 20px; border-radius: 5px; margin-bottom: 20px; white-space: pre-wrap; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 10px; border-bottom: 1px solid #ddd; text-align: left; }
+
+        /* КОЛЬОРИ ДЛЯ ЧАСТИН МОВИ */
+        .pos-noun { color: #2980b9; cursor: pointer; border-bottom: 1px dashed #2980b9; } /* Іменники - Сині */
+        .pos-verb { color: #c0392b; cursor: pointer; border-bottom: 1px dashed #c0392b; } /* Дієслова - Червоні */
+        .pos-adj { color: #27ae60; cursor: pointer; border-bottom: 1px dashed #27ae60; }  /* Прикметники - Зелені */
+        .pos-other { color: #333; } /* Інше (частки, символи) - Чорні */
+
+        /* Ефект при наведенні мишки */
+        .clickable:hover { background-color: #ffff99; text-decoration: none; border-bottom: 2px solid orange; }
+
+        /* Стиль для спливаючого повідомлення (Toast) */
+        #toast { visibility: hidden; min-width: 250px; background-color: #333; color: #fff; text-align: center; border-radius: 5px; padding: 16px; position: fixed; z-index: 1; bottom: 30px; left: 50%; transform: translateX(-50%); }
+        #toast.show {
+            visibility: visible;
+            animation-name: fadein, fadeout;
+            animation-duration: 0.5s, 0.5s;
+            animation-delay: 0s, 2.5s;
+        }
+        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+    </style>
+</head>
+<body>
+<div class="container">
+    <a href="/articles">← Назад до списку текстів</a>
+
+    <h1 th:text="${article.title}">Назва</h1>
+
+    <div class="jp-text"><span th:each="word : ${parsedWords}" th:text="${word.surface}" th:classappend="${word.partOfSpeech == '名詞' ? 'pos-noun clickable' : (word.partOfSpeech == '動詞' ? 'pos-verb clickable' : (word.partOfSpeech == '形容詞' ? 'pos-adj clickable' : 'pos-other'))}" th:data-baseform="${word.baseForm}" th:onclick="${word.partOfSpeech != '記号' && word.partOfSpeech != '助詞'} ? 'addWord(this)' : ''"></span></div>
+
+    <h3>Словник до цього тексту:</h3>
+    <table id="vocab-table">
+        <tr><th>Слово</th><th>Читання</th><th>Переклад</th></tr>
+        <tr th:each="vocab : ${article.vocabularies}">
+            <td style="font-weight: bold; font-size: 1.2em;" th:text="${vocab.word}">Слово</td>
+            <td th:text="${vocab.reading}">Читання</td>
+            <td th:text="${vocab.meaning}">Переклад</td>
+        </tr>
+    </table>
+</div>
+
+<div id="toast">Слово додано!</div>
+
+<script th:inline="javascript">
+    function addWord(element) {
+        // Беремо словникову форму слова (щоб шукати 'їсти', а не 'з'їв')
+        const baseForm = element.getAttribute('data-baseform');
+        const articleId = /*[[${article.id}]]*/ 0;
+
+        // Показуємо користувачу, що пішов процес
+        element.style.backgroundColor = '#d1d8e0';
+
+        // Відправляємо фоновий запит на сервер
+        fetch(`/api/articles/${articleId}/words/add-ajax?word=` + encodeURIComponent(baseForm), {
+            method: 'POST'
+        })
+            .then(response => response.json())
+            .then(data => {
+                // Прибираємо сірий фон
+                element.style.backgroundColor = 'transparent';
+                element.style.fontWeight = 'bold'; // Робимо слово жирним, щоб було видно, що ми його вчимо
+
+                // Показуємо красиве сповіщення
+                const toast = document.getElementById("toast");
+                toast.innerText = `Додано: ${data.word} (${data.reading}) - ${data.meaning}`;
+                toast.className = "show";
+                setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3000);
+
+                // Динамічно додаємо новий рядок у таблицю без перезавантаження сторінки
+                const table = document.getElementById("vocab-table");
+                const row = table.insertRow(-1);
+                row.innerHTML = `<td style="font-weight: bold; font-size: 1.2em;">${data.word}</td><td>${data.reading}</td><td>${data.meaning}</td>`;
+            })
+            .catch(error => {
+                alert("Сталася помилка при пошуку слова.");
+                element.style.backgroundColor = 'transparent';
+            });
+    }
+</script>
+</body>
+</html>

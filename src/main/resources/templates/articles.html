@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Мої тексти</title>
+    <style>
+        body { font-family: sans-serif; background-color: #f4f7f6; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; }
+        nav { margin-bottom: 20px; }
+        nav a { margin-right: 15px; text-decoration: none; color: #3498db; font-weight: bold; }
+        textarea, input { width: 100%; margin-bottom: 10px; padding: 10px; box-sizing: border-box; }
+        button { padding: 10px; background-color: #2ecc71; color: white; border: none; cursor: pointer; }
+        .article-card { border: 1px solid #ddd; padding: 15px; margin-top: 15px; border-radius: 5px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <nav>
+        <a href="/">Словник</a>
+        <a href="/articles">Тексти</a>
+        <a href="/explore">Новини</a>
+    </nav>
+
+    <h2>Додати новий японський текст</h2>
+    <form th:action="@{/ui/articles/add}" method="post">
+        <input type="text" name="title" placeholder="Назва тексту" required>
+        <textarea name="content" rows="5" placeholder="Вставте японський текст сюди..." required></textarea>
+        <button type="submit">Зберегти текст</button>
+    </form>
+
+    <h2>Збережені тексти</h2>
+    <div th:each="article : ${articles}" class="article-card">
+        <h3 th:text="${article.title}">Назва</h3>
+        <a th:href="@{/articles/{id}(id=${article.id})}">Читати та аналізувати →</a>
+    </div>
+</div>
+</body>
+</html>
