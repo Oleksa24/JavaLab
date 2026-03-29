@@ -16,14 +16,13 @@ import java.io.IOException;
 public class DictionaryParserService {
 
     private final VocabularyRepository vocabularyRepository;
-    private final ArticleRepository articleRepository; // Додали репозиторій статей
+    private final ArticleRepository articleRepository;
 
     public DictionaryParserService(VocabularyRepository vocabularyRepository, ArticleRepository articleRepository) {
         this.vocabularyRepository = vocabularyRepository;
         this.articleRepository = articleRepository;
     }
 
-    // Старий метод (залишаємо як є)
     public Vocabulary fetchAndSaveWordInfo(String word) {
         return vocabularyRepository.findByWord(word).orElseGet(() -> {
             try {
@@ -44,20 +43,15 @@ public class DictionaryParserService {
             }
         });
     }
-
-    // НОВИЙ МЕТОД: Парсить слово і одразу додає його до статті (Many-to-Many)
     @Transactional
     public Vocabulary fetchAndLinkWordToArticle(String word, Long articleId) {
-        // 1. Отримуємо або створюємо слово
         Vocabulary vocab = fetchAndSaveWordInfo(word);
 
-        // 2. Знаходимо статтю
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new RuntimeException("Статтю не знайдено"));
 
-        // 3. Зв'язуємо їх
         article.addVocabulary(vocab);
-        articleRepository.save(article); // Зберігаємо зв'язок у таблицю article_vocabulary
+        articleRepository.save(article);
 
         return vocab;
     }

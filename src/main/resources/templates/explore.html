@@ -21,9 +21,15 @@
 <body>
 
 <nav>
-    <a href="/">Словник</a>
-    <a href="/articles">Тексти</a>
-    <a href="/explore">Новини</a>
+    <a href="/" th:text="#{nav.dictionary}">Словник</a>
+    <a href="/articles" th:text="#{nav.articles}">Тексти</a>
+    <a href="/explore" th:text="#{nav.explore}">Новини</a>
+
+    <span style="float: right;">
+        <span th:text="#{nav.lang}">Мова:</span>
+        <a href="?lang=uk">🇺🇦 УКР</a> |
+        <a href="?lang=en">🇬🇧 ENG</a>
+    </span>
 </nav>
 
 <div class="wrapper">
@@ -37,7 +43,7 @@
     </div>
 
     <div class="content">
-        <h2>Свіжі публікації</h2>
+        <h2 th:text="#{page.explore.content.title}">Свіжі публікації</h2>
 
         <div th:if="${newsList == null}">
             <p>Оберіть джерело зліва, щоб завантажити останні статті.</p>
@@ -55,7 +61,7 @@
                     <textarea name="title" style="display: none;" th:text="${news.title}"></textarea>
                     <textarea name="sourceUrl" style="display: none;" th:text="${news.sourceUrl}"></textarea>
 
-                    <button type="submit" class="import-btn">📥 Імпортувати повний текст</button>
+                    <button type="submit" class="import-btn" th:text="#{page.explore.btn.import}">Імпортувати</button>
                 </form>
             </div>
         </div>

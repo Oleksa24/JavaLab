@@ -20,21 +20,17 @@ public class AppController {
         this.parserService = parserService;
         this.vocabularyRepository = vocabularyRepository;
     }
-
-    // 1. CREATE: Додати нове слово (автоматично спарсить значення з Jisho)
     @PostMapping("/add")
     public ResponseEntity<Vocabulary> addWord(@RequestBody VocabularyDto dto) {
         Vocabulary savedWord = parserService.fetchAndSaveWordInfo(dto.word);
         return ResponseEntity.ok(savedWord);
     }
 
-    // 2. READ: Отримати всі слова
     @GetMapping("/all")
     public ResponseEntity<List<Vocabulary>> getAllWords() {
         return ResponseEntity.ok(vocabularyRepository.findAll());
     }
 
-    // 3. DELETE: Видалити слово зі словника
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteWord(@PathVariable Long id) {
         vocabularyRepository.deleteById(id);

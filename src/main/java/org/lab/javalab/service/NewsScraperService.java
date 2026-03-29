@@ -20,7 +20,6 @@ public class NewsScraperService {
         List<ScrapedArticleDto> articles = new ArrayList<>();
         String url = "";
 
-        // Визначаємо URL для різних сайтів
         switch (sourceId) {
             case "yahoo-top":
                 url = "https://news.yahoo.co.jp/rss/topics/top-picks.xml";
@@ -29,13 +28,13 @@ public class NewsScraperService {
                 url = "https://news.yahoo.co.jp/rss/topics/science.xml";
                 break;
             case "nhk-news":
-                url = "https://www.nhk.or.jp/rss/news/cat0.xml"; // Офіційні новини Японії
+                url = "https://www.nhk.or.jp/rss/news/cat0.xml";
                 break;
             case "itmedia":
                 url = "https://rss.itmedia.co.jp/rss/2.0/itmedia_all.xml"; // IT-новини
                 break;
             case "zenn":
-                url = "https://zenn.dev/feed"; // Статті про програмування та розробку
+                url = "https://zenn.dev/feed";
                 break;
             default:
                 return articles;
@@ -58,7 +57,6 @@ public class NewsScraperService {
 
                 String realArticleLink = previewLink;
 
-                // Спеціальна обробка тільки для Yahoo (бо інші сайти дають прямі лінки)
                 if (previewLink.contains("news.yahoo.co.jp/pickup/")) {
                     try {
                         Document pickupDoc = Jsoup.connect(previewLink)
@@ -84,15 +82,12 @@ public class NewsScraperService {
         return articles;
     }
 
-    // ОНОВЛЕНИЙ МЕТОД: Знає класи нових сайтів
     public String scrapeFullArticleText(String articleUrl) {
         try {
             Document doc = Jsoup.connect(articleUrl)
                     .userAgent(USER_AGENT)
                     .timeout(5000)
                     .get();
-
-            // Додали селектори для NHK (content--detail-main), ITmedia (#cmsBody), Zenn (.znc) та загального тегу <article>
             Elements paragraphs = doc.select(".article_body p, .highLightSearchTarget p, #uamods p, .content--detail-main p, #cmsBody p, .znc p, article p");
 
             if (!paragraphs.isEmpty()) {

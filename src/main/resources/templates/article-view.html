@@ -10,16 +10,13 @@
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { padding: 10px; border-bottom: 1px solid #ddd; text-align: left; }
 
-        /* КОЛЬОРИ ДЛЯ ЧАСТИН МОВИ */
         .pos-noun { color: #2980b9; cursor: pointer; border-bottom: 1px dashed #2980b9; } /* Іменники - Сині */
         .pos-verb { color: #c0392b; cursor: pointer; border-bottom: 1px dashed #c0392b; } /* Дієслова - Червоні */
         .pos-adj { color: #27ae60; cursor: pointer; border-bottom: 1px dashed #27ae60; }  /* Прикметники - Зелені */
         .pos-other { color: #333; } /* Інше (частки, символи) - Чорні */
 
-        /* Ефект при наведенні мишки */
         .clickable:hover { background-color: #ffff99; text-decoration: none; border-bottom: 2px solid orange; }
 
-        /* Стиль для спливаючого повідомлення (Toast) */
         #toast { visibility: hidden; min-width: 250px; background-color: #333; color: #fff; text-align: center; border-radius: 5px; padding: 16px; position: fixed; z-index: 1; bottom: 30px; left: 50%; transform: translateX(-50%); }
         #toast.show {
             visibility: visible;
@@ -54,30 +51,24 @@
 
 <script th:inline="javascript">
     function addWord(element) {
-        // Беремо словникову форму слова (щоб шукати 'їсти', а не 'з'їв')
         const baseForm = element.getAttribute('data-baseform');
         const articleId = /*[[${article.id}]]*/ 0;
 
-        // Показуємо користувачу, що пішов процес
         element.style.backgroundColor = '#d1d8e0';
 
-        // Відправляємо фоновий запит на сервер
         fetch(`/api/articles/${articleId}/words/add-ajax?word=` + encodeURIComponent(baseForm), {
             method: 'POST'
         })
             .then(response => response.json())
             .then(data => {
-                // Прибираємо сірий фон
                 element.style.backgroundColor = 'transparent';
-                element.style.fontWeight = 'bold'; // Робимо слово жирним, щоб було видно, що ми його вчимо
+                element.style.fontWeight = 'bold';
 
-                // Показуємо красиве сповіщення
                 const toast = document.getElementById("toast");
                 toast.innerText = `Додано: ${data.word} (${data.reading}) - ${data.meaning}`;
                 toast.className = "show";
                 setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3000);
 
-                // Динамічно додаємо новий рядок у таблицю без перезавантаження сторінки
                 const table = document.getElementById("vocab-table");
                 const row = table.insertRow(-1);
                 row.innerHTML = `<td style="font-weight: bold; font-size: 1.2em;">${data.word}</td><td>${data.reading}</td><td>${data.meaning}</td>`;

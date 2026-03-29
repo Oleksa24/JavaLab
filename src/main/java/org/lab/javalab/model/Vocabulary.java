@@ -17,7 +17,6 @@ public class Vocabulary {
     @ManyToMany(mappedBy = "vocabularies")
     private Set<Article> articles = new HashSet<>();
 
-    // Конструктори, Getters та Setters
     public Vocabulary() {}
 
     public Vocabulary(String word, String reading, String meaning) {

@@ -35,7 +35,6 @@ public class FrontendController {
         this.newsScraperService = newsScraperService;
     }
 
-    // --- РОБОТА ЗІ СЛОВНИКОМ (Головна сторінка) ---
     @GetMapping("/")
     public String index(Model model) {
         model.addAttribute("words", vocabularyRepository.findAll());
@@ -54,16 +53,12 @@ public class FrontendController {
         return "redirect:/";
     }
 
-    // --- НОВЕ: РОБОТА ЗІ СТАТТЯМИ ---
-
-    // 1. Сторінка списку статей
     @GetMapping("/articles")
     public String articlesList(Model model) {
         model.addAttribute("articles", articleRepository.findAll());
         return "articles";
     }
 
-    // 2. Додати нову статтю
     @PostMapping("/ui/articles/add")
     public String addArticle(@RequestParam String title, @RequestParam String content) {
         Article article = new Article();
@@ -73,46 +68,39 @@ public class FrontendController {
         return "redirect:/articles";
     }
 
-    // 3. Відкрити статтю для читання
     @GetMapping("/articles/{id}")
     public String viewArticle(@PathVariable Long id, Model model) {
         Article article = articleRepository.findById(id).orElseThrow();
         model.addAttribute("article", article);
 
-        // Ініціалізуємо японський аналізатор
         Tokenizer tokenizer = new Tokenizer();
         List<Token> tokens = tokenizer.tokenize(article.getContent());
         List<ParsedWordDto> parsedWords = new ArrayList<>();
 
         for (Token token : tokens) {
-            String pos = token.getPartOfSpeechLevel1(); // Отримуємо частину мови (японською)
+            String pos = token.getPartOfSpeechLevel1();
 
-            // Якщо слово змінене (напр. минулий час), беремо його словникову форму, інакше - як є
             String baseForm = token.getBaseForm() != null && !token.getBaseForm().equals("*")
                     ? token.getBaseForm()
                     : token.getSurface();
 
             parsedWords.add(new ParsedWordDto(token.getSurface(), baseForm, pos));
         }
-
-        // Передаємо список розібраних слів на сторінку
         model.addAttribute("parsedWords", parsedWords);
 
         return "article-view";
     }
 
-    // 4. Додати слово безпосередньо до статті
     @PostMapping("/ui/articles/{id}/words/add")
     public String addWordToArticle(@PathVariable Long id, @RequestParam String word) {
         parserService.fetchAndLinkWordToArticle(word, id);
-        return "redirect:/articles/" + id; // Повертаємось на сторінку читання
+        return "redirect:/articles/" + id;
     }
     @GetMapping("/explore")
     public String exploreNews(Model model) {
         return "explore";
     }
 
-    // 2. Парсинг конкретного джерела при натисканні на посилання
     @GetMapping("/explore/{sourceId}")
     public String viewScrapedNews(@PathVariable String sourceId, Model model) {
         List<ScrapedArticleDto> newsList = newsScraperService.scrapeNews(sourceId);
@@ -121,17 +109,14 @@ public class FrontendController {
         return "explore";
     }
 
-    // 3. Збереження статті в базу даних при натисканні "Імпортувати"
     @PostMapping("/ui/articles/import")
     public String importArticleToDb(@RequestParam String title, @RequestParam String sourceUrl) {
 
-        // 1. Йдемо за посиланням і парсимо ВЕСЬ текст статті
         String fullText = newsScraperService.scrapeFullArticleText(sourceUrl);
 
-        // 2. Створюємо статтю і зберігаємо в БД
         Article article = new Article();
         article.setTitle(title);
-        article.setContent(fullText); // Зберігаємо саме величезний спарсений текст
+        article.setContent(fullText);
         articleRepository.save(article);
 
         return "redirect:/articles";
@@ -139,8 +124,7 @@ public class FrontendController {
     @PostMapping("/api/articles/{id}/words/add-ajax")
     @ResponseBody
     public ResponseEntity<Vocabulary> addWordAjax(@PathVariable Long id, @RequestParam String word) {
-        // Викликаємо наш сервіс парсингу, який знаходить переклад і прив'язує до статті
         Vocabulary vocab = parserService.fetchAndLinkWordToArticle(word, id);
-        return ResponseEntity.ok(vocab); // Повертаємо знайдене слово у форматі JSON
+        return ResponseEntity.ok(vocab);
     }
 }

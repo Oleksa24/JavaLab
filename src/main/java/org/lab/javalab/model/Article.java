@@ -23,7 +23,6 @@ public class Article {
     )
     private Set<Vocabulary> vocabularies = new HashSet<>();
 
-    // Getters та Setters...
     public Long getId() { return id; }
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
