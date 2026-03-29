@@ -24,9 +24,15 @@
 <body>
 <div class="container">
     <nav>
-        <a href="/">Словник</a>
-        <a href="/articles">Тексти</a>
-        <a href="/explore">Новини</a>
+        <a href="/" th:text="#{nav.dictionary}">Словник</a>
+        <a href="/articles" th:text="#{nav.articles}">Тексти</a>
+        <a href="/explore" th:text="#{nav.explore}">Новини</a>
+
+        <span style="float: right;">
+        <span th:text="#{nav.lang}">Мова:</span>
+        <a href="?lang=uk">🇺🇦 УКР</a> |
+        <a href="?lang=en">🇬🇧 ENG</a>
+    </span>
     </nav>
     <h1>Мій словник 🇯🇵</h1>
 
