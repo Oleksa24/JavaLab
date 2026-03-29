@@ -34,26 +34,26 @@
 
 <div class="wrapper">
     <div class="sidebar">
-        <h3>Японські ресурси</h3>
-        <a href="/explore/yahoo-top" class="source-link">Yahoo Japan Загальні Новини</a>
-        <a href="/explore/yahoo-science" class="source-link">Yahoo Japan Наукові Новини</a>
-        <a href="/explore/nhk-news" class="source-link">NHK News Офіційні новини</a>
-        <a href="/explore/itmedia" class="source-link">ITmedia IT новини</a>
-        <a href="/explore/zenn" class="source-link">Zenn IT новини та статті</a>
+        <h3 th:text="#{page.explore.content.sources}">Японські ресурси</h3>
+        <a href="/explore/yahoo-top" class="source-link" th:text="#{page.explore.content.news1}">Yahoo Japan Загальні Новини</a>
+        <a href="/explore/yahoo-science" class="source-link" th:text="#{page.explore.content.news2}">Yahoo Japan Наукові Новини</a>
+        <a href="/explore/nhk-news" class="source-link" th:text="#{page.explore.content.news3}">NHK News Офіційні новини</a>
+        <a href="/explore/itmedia" class="source-link" th:text="#{page.explore.content.news4}">ITmedia IT новини</a>
+        <a href="/explore/zenn" class="source-link" th:text="#{page.explore.content.news5}">Zenn IT новини та статті</a>
     </div>
 
     <div class="content">
         <h2 th:text="#{page.explore.content.title}">Свіжі публікації</h2>
 
         <div th:if="${newsList == null}">
-            <p>Оберіть джерело зліва, щоб завантажити останні статті.</p>
+            <p th:text="#{page.explore.hint}">Оберіть джерело зліва, щоб завантажити останні статті.</p>
         </div>
 
         <div th:if="${newsList != null}">
             <div th:each="news : ${newsList}" class="news-card">
                 <h3 th:text="${news.title}">Назва новини</h3>
                 <p th:text="${news.content}">Короткий текст...</p>
-                <a th:href="${news.sourceUrl}" target="_blank" style="font-size: 0.9em; color: gray;">Читати оригінал</a>
+                <a th:href="${news.sourceUrl}" target="_blank" style="font-size: 0.9em; color: gray;" th:text="#{page.explore.content.og}">Читати оригінал</a>
 
                 <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
 

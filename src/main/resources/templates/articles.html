@@ -27,17 +27,17 @@
     </span>
     </nav>
 
-    <h2>Додати новий японський текст</h2>
+    <h2 th:text="#{page.article.content.addNew}">Додати новий японський текст</h2>
     <form th:action="@{/ui/articles/add}" method="post">
-        <input type="text" name="title" placeholder="Назва тексту" required>
-        <textarea name="content" rows="5" placeholder="Вставте японський текст сюди..." required></textarea>
-        <button type="submit">Зберегти текст</button>
+        <input type="text" name="title" placeholder="Назва тексту" th:placeholder="#{page.article.content.placeholderTitle}" required>
+        <textarea name="content" rows="5" placeholder="Вставте японський текст сюди..." th:placeholder="#{page.article.content.placeholderText}" required></textarea>
+        <button type="submit" th:text="#{page.article.btn.save}">Зберегти текст</button>
     </form>
 
-    <h2>Збережені тексти</h2>
+    <h2 th:text="#{page.article.content.saved}">Збережені тексти</h2>
     <div th:each="article : ${articles}" class="article-card">
         <h3 th:text="${article.title}">Назва</h3>
-        <a th:href="@{/articles/{id}(id=${article.id})}">Читати та аналізувати →</a>
+        <a th:href="@{/articles/{id}(id=${article.id})}" th:text="#{page.article.content.readAndAnalyse}">Читати та аналізувати →</a>
     </div>
 </div>
 </body>
